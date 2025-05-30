@@ -9,11 +9,15 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 # Install Python, pip, and other necessary system dependencies
-# Trying a more robust apt-get sequence to handle potential issues
+# Step 1: Initial cleanup and update package lists
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && apt-get update -o Acquire::Retries=3 -o Acquire::http::No-Cache=true -o Acquire::ftp::No-Cache=true \
-    && apt-get install -y --no-install-recommends \
+    && apt-get update -o Acquire::Retries=3 -o Acquire::http::No-Cache=true -o Acquire::ftp::No-Cache=true
+
+# Step 2: Install packages with verbose output for debugging
+# Adding set -x to see exactly which command is failing
+RUN set -x; \
+    apt-get install -y --no-install-recommends \
        python3.10 \
        python3-pip \
        python3-venv \
