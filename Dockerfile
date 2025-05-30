@@ -9,19 +9,22 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 # Install Python, pip, and other necessary system dependencies
-# Separated apt-get update, install, and clean steps for robustness
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    python3.10 \
-    python3-pip \
-    python3-venv \
-    git \
-    curl \
-    build-essential \
-    libsndfile1 && \
-    # Clean up apt caches to reduce image size
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Trying a more robust apt-get sequence to handle potential issues
+RUN apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get update -o Acquire::Retries=3 -o Acquire::http::No-Cache=true -o Acquire::ftp::No-Cache=true \
+    && apt-get install -y --no-install-recommends \
+       python3.10 \
+       python3-pip \
+       python3-venv \
+       git \
+       curl \
+       build-essential \
+       libsndfile1 \
+    # Clean up again to reduce image size
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Create a non-root user and switch to it
 RUN useradd -ms /bin/bash appuser
