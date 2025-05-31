@@ -1,7 +1,7 @@
 # Dockerfile
 # Use an NVIDIA CUDA base image compatible with T4 GPUs and PyTorch/bitsandbytes
 # CUDA 12.1.1 is a good target for recent PyTorch versions.
-FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
+FROM nvidia/cuda:12.8.0-cudnn-runtime-ubuntu22.04
 
 # Set environment variables to prevent interactive prompts during package installations
 ENV DEBIAN_FRONTEND=noninteractive
@@ -51,7 +51,7 @@ COPY --chown=appuser:appuser app.py .
 # This ensures the correct GPU-enabled version is picked up.
 # The specific versions of torch (2.7.0) and transformers (4.52.3) are from your requirements.
 # If these exact versions are not available for cu121, pip will error.
-RUN python -m pip install --no-cache-dir torch==2.7.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+RUN python -m pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
 
 # Install other Python dependencies from requirements.txt
 # bitsandbytes will be compiled if a pre-built wheel matching the environment isn't found.

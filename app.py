@@ -9,8 +9,8 @@ import wave
 import torch
 from transformers import pipeline, BitsAndBytesConfig
 from dotenv import load_dotenv
-import google.generativeai as genai
-from google.generativeai import types
+from google import genai
+from google.genai import types
 
 # --- Streamlit Page Configuration ---
 st.set_page_config(layout="wide", page_title="Radiology with MedGemma & Gemini TTS")
@@ -35,7 +35,7 @@ if gemini_api_key:
         st.success("Gemini API client initialized successfully.")
     except Exception as e:
         st.error(f"Failed to initialize Gemini API client: {e}")
-        st.info("Ensure 'google-generativeai' library is up-to-date and your API key is valid.")
+        st.info("Ensure 'google-genai' library is up-to-date and your API key is valid.")
 else:
     st.error("Gemini API key is missing. Gemini TTS functionality will be disabled.")
 

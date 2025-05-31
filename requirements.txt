@@ -5,5 +5,5 @@ google-genai==1.17.0
 Pillow==11.2.1
 python-dotenv==1.1.0
 requests==2.32.3
-torch==2.7.0
+torch==2.7.0 --index-url https://download.pytorch.org/whl/nightly/cu128
 transformers==4.52.3
