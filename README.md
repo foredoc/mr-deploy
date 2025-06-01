@@ -141,29 +141,6 @@ It's crucial to store sensitive API keys securely.
     * `--timeout` should be sufficient for model loading and inference.
     * `--set-secrets` maps the Secret Manager secrets to environment variables in your container.
 
-    ```bash
-    export SERVICE_NAME="medgemma-radiology-service"
-
-    gcloud run deploy $SERVICE_NAME \
-        --image=$IMAGE_URI \
-        --platform=managed \
-        --region=$REGION \
-        --allow-unauthenticated \
-        --port=8501 \
-        --cpu=4 \
-        --memory=16Gi \
-        --min-instances=0 \
-        --max-instances=2 \
-        --concurrency=1 \
-        --timeout=900s \
-        --execution-environment=gen2 \
-        --update-secrets=HF_TOKEN=HF_TOKEN_SECRET:latest,GOOGLE_API_KEY=GOOGLE_API_KEY_SECRET:latest \
-        --args=--gpu=1,type=nvidia-tesla-t4 \
-        --service-account="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" # Or your custom service account
-        # If you added GEMINI_TTS_MODEL_SECRET, add it to --update-secrets:
-        # e.g., --update-secrets=HF_TOKEN=HF_TOKEN_SECRET:latest,GOOGLE_API_KEY=GOOGLE_API_KEY_SECRET:latest,GEMINI_TTS_MODEL_NAME=GEMINI_TTS_MODEL_SECRET:latest
-    ```
-
     **Explanation of Flags:**
     * `--image`: Your image in Artifact Registry.
     * `--platform=managed`: Use managed Cloud Run.
@@ -177,14 +154,9 @@ It's crucial to store sensitive API keys securely.
     * `--timeout=900s`: (15 minutes) Max request timeout. Adjust as needed for long inferences or model loads.
     * `--execution-environment=gen2`: Second-generation execution environment is generally recommended.
     * `--update-secrets`: Maps secrets to environment variables. The format is `ENV_VAR_NAME=SECRET_NAME:VERSION`.
-    * `--args=--gpu=1,type=nvidia-tesla-t4`: **This is how you request a GPU.** It's passed as an argument to the underlying infrastructure. (Note: The exact flag for GPU allocation might evolve. As of recent documentation, it's often part of `--container-options` or directly specified. The `--args` method for GPU is less common now. The correct way for Gen2 is typically `--gpu=type=nvidia-tesla-t4`. Let's adjust the command.)
+    * `--gpu=type=nvidia-l4`: **This is how you request a GPU.** It's passed as an argument to the underlying infrastructure.
 
-    **Corrected GPU Flag for `gcloud run deploy` (Gen2):**
-    The `--args=--gpu=1,type=nvidia-tesla-t4` is an older or incorrect syntax for Cloud Run GPU.
-    The correct way to specify GPUs for Cloud Run (Gen2) is using the `--gpu` flag directly.
-
-    **Revised `gcloud run deploy` command:**
-    ```bash
+   ```bash
     gcloud run deploy $SERVICE_NAME \
         --image=$IMAGE_URI \
         --platform=managed \
@@ -199,7 +171,7 @@ It's crucial to store sensitive API keys securely.
         --timeout=900s \
         --execution-environment=gen2 \
         --update-secrets=HF_TOKEN=HF_TOKEN_SECRET:latest,GOOGLE_API_KEY=GOOGLE_API_KEY_SECRET:latest \
-        --gpu=type=nvidia-tesla-t4 \
+        --gpu=type=nvidia-l4 \
         --service-account="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
         # If you added GEMINI_TTS_MODEL_SECRET:
         # ,GEMINI_TTS_MODEL_NAME=GEMINI_TTS_MODEL_SECRET:latest (append to --update-secrets value)
