@@ -1,7 +1,6 @@
 # Dockerfile
 # Use an NVIDIA CUDA base image compatible with T4 GPUs and PyTorch/bitsandbytes
-# CUDA 12.1.1 is a good target for recent PyTorch versions.
-FROM nvidia/cuda:12.8.0-cudnn-runtime-ubuntu22.04
+FROM nvidia/cuda:12.2.2-runtime-ubuntu22.04
 
 # Set environment variables to prevent interactive prompts during package installations
 ENV DEBIAN_FRONTEND=noninteractive
@@ -45,7 +44,7 @@ COPY --chown=appuser:appuser requirements.txt .
 COPY --chown=appuser:appuser start.sh .
 COPY --chown=appuser:appuser app.py .
 # If you have a .env.placeholder, copy it too for reference (though secrets are preferred on Cloud Run)
-# COPY --chown=appuser:appuser .env.placeholder .
+COPY --chown=appuser:appuser .env .
 
 # Install PyTorch with CUDA 12.1 support first
 # This ensures the correct GPU-enabled version is picked up.

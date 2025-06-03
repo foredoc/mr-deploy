@@ -13,7 +13,7 @@ from google import genai
 from google.genai import types
 
 # --- Streamlit Page Configuration ---
-st.set_page_config(layout="wide", page_title="Radiology with MedGemma & Gemini TTS")
+st.set_page_config(layout="wide", page_title="Radiology with MedGemma")
 
 # --- Configuration and API Key Handling ---
 # Load environment variables from .env file (primarily for local development)
@@ -31,8 +31,8 @@ if not gemini_api_key:
 gemini_client = None
 if gemini_api_key:
     try:
-        gemini_client = genai.Client(api_key=gemini_api_key) # Restored
-        st.success("Gemini API client initialized successfully.")
+        gemini_client = genai.Client(api_key=gemini_api_key)
+        # st.success("Gemini API client initialized successfully.")
     except Exception as e:
         st.error(f"Failed to initialize Gemini API client: {e}")
         st.info("Ensure 'google-genai' library is up-to-date and your API key is valid.")
@@ -46,7 +46,7 @@ def load_medgemma_model():
     """
     Loads the MedGemma model. Uses st.cache_resource to load only once.
     """
-    st.write("Loading MedGemma model... This may take a moment.")
+    st.write("Loading model... This may take a moment.")
     if not torch.cuda.is_available():
         st.error("CUDA is not available. MedGemma (4b-it) requires a GPU.")
         return None
@@ -60,13 +60,8 @@ def load_medgemma_model():
             device_map="cuda:0",
             quantization_config=quantization_config
         )
-        # Using "image-to-text" as it's a common task. If "image-text-to-text" is specific and correct for MedGemma,
-        # and your input format (messages) is designed for it, you can revert this.
-        # The Hugging Face documentation for "google/medgemma-4b-it" should clarify the exact pipeline task name.
-        # For now, assuming "image-to-text" is a safer default if the model supports VQA-like interaction.
-        # If your original "image-text-to-text" and message format is correct, please use that.
-        hf_pipeline_task = os.getenv("HF_PIPELINE_TASK", "image-to-text") # Defaulting to "image-to-text"
-        st.write(f"Using Hugging Face pipeline task: {hf_pipeline_task}")
+        hf_pipeline_task = os.getenv("HF_PIPELINE_TASK", "image-text-to-text")
+        # st.write(f"Using Hugging Face pipeline task: {hf_pipeline_task}")
 
         pipe = pipeline(
             hf_pipeline_task,
@@ -103,7 +98,6 @@ def infer(prompt: str, image: Image.Image, system: str = None) -> str:
         st.error(f"Error saving temporary image: {e}")
         return "Error: Could not process image for inference."
 
-    # Constructing messages as per original script.
     # This format is specific and assumes the MedGemma pipeline (`pipe`) is set up to receive it.
     # If using a standard "image-to-text" pipeline, it might expect `pipe(image_object, prompt=text_prompt)`.
     messages = []
@@ -169,13 +163,20 @@ def wave_file(filename, pcm, channels=1, rate=24000, sample_width=2):
         wf.writeframes(pcm)
 
 # --- Streamlit UI ---
-st.title("Demo: Radiology with MedGemma & Gemini's Native TTS")
+st.title("Demo: Radiology with MedGemma")
 st.markdown(
     """
-        This interactive demo is designed to show you how advanced AI technologies can make complex medical information easier to understand. Here, you’ll experience two of these innovations:
-        - **MedGemma**: An advanced AI model built specifically for healthcare, MedGemma can analyze medical images—like X-rays and CT scans—and generate clear, plain-language reports. It’s been trained on a wide range of medical data, allowing it to highlight important findings and explain them in a way that’s accessible to everyone.
-        - **Gemini’s Native Text-to-Speech (TTS)**: This technology brings your medical reports to life by reading them out loud in a natural, easy-to-understand voice, making medical insights even more accessible.
-        With this demo, you can upload a medical image or provide a link, ask a question or give instructions, and instantly receive both a written and spoken explanation. Our goal is to make medical imaging more approachable and to help users better understand radiology results with the help of cutting-edge AI.
+Experience how advanced AI can simplify complex medical information with this interactive demo.
+
+## AI for Medical Image and Text Analysis
+
+**MedGemma** is a state-of-the-art AI model from Google DeepMind, purpose-built for healthcare applications. It can analyze a variety of medical images—including chest X-rays, dermatology photos, ophthalmology images, and histopathology slides—and generate clear, accessible reports in plain language. Trained on diverse, de-identified medical datasets, MedGemma highlights key findings and explains them in a way that’s easy to understand.
+
+- Supports image uploads and links for instant analysis
+- Provides both written and spoken explanations
+- Handles both medical images and text-based queries
+
+MedGemma can be fine-tuned to fit specific medical imaging or text use cases, making it a flexible and privacy-preserving tool for healthcare applications.
     """
 )
 
@@ -212,11 +213,11 @@ with st.sidebar:
                 st.error(f"Error loading image from URL: {e}")
                 image_input = None
 
-    text_prompt = st.text_area("Instructions (e.g., 'Describe this X-ray in simple terms.')", "Describe this chest X-ray looking for any abnormalities.")
+    text_prompt = st.text_area("Instructions (e.g., 'Describe this X-ray in simple terms.')", "Describe this chest X-ray and look for any abnormalities.")
 
 st.header("Generated Report")
 
-if st.button("Generate Report and Audio"):
+if st.button("Generate Report"):
     if image_input is None:
         st.warning("Please upload an image or provide a valid image URL.")
     elif not text_prompt.strip():
@@ -242,7 +243,7 @@ if st.button("Generate Report and Audio"):
                         tts_model_name = os.getenv("GEMINI_TTS_MODEL_NAME", "gemini-2.5-flash-preview-tts") # Allow override via env var
                         tts_voice_name = os.getenv("GEMINI_TTS_VOICE_NAME", "Kore") # Allow override
 
-                        st.write(f"Generating audio with Gemini TTS (model: {tts_model_name}, voice: {tts_voice_name}) for: '{report[:100]}...'")
+                        # st.write(f"Generating audio with Gemini TTS (model: {tts_model_name}, voice: {tts_voice_name}) for: '{report[:100]}...'")
 
                         tts_response = gemini_client.models.generate_content(
                             model=tts_model_name, # e.g., "gemini-2.5-flash-preview-tts"
