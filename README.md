@@ -164,7 +164,7 @@ It's crucial to store sensitive API keys securely.
         --allow-unauthenticated \
         --port=8501 \
         --cpu=4 \
-        --memory=24Gi \
+        --memory=16Gi \
         --min-instances=0 \
         --max-instances=2 \
         --concurrency=1 \
