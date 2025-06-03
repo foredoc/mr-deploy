@@ -175,7 +175,7 @@ It's crucial to store sensitive API keys securely.
         --service-account="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
         # If you added GEMINI_TTS_MODEL_SECRET:
         # ,GEMINI_TTS_MODEL_NAME=GEMINI_TTS_MODEL_SECRET:latest (append to --update-secrets value)
-    ```
+```
 
 2.  **Monitor Deployment:**
     The deployment process will output a URL for your service once it's ready. You can also monitor it in the Google Cloud Console under Cloud Run. The first deployment with GPU and model download might take several minutes.
