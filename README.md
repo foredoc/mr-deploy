@@ -164,14 +164,14 @@ It's crucial to store sensitive API keys securely.
         --allow-unauthenticated \
         --port=8501 \
         --cpu=4 \
-        --memory=16Gi \
+        --memory=24Gi \
         --min-instances=0 \
         --max-instances=2 \
         --concurrency=1 \
         --timeout=900s \
         --execution-environment=gen2 \
         --update-secrets=HF_TOKEN=HF_TOKEN_SECRET:latest,GOOGLE_API_KEY=GOOGLE_API_KEY_SECRET:latest \
-        --gpu=type=nvidia-l4 \
+        --gpu-type=nvidia-l4 \
         --service-account="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
         # If you added GEMINI_TTS_MODEL_SECRET:
         # ,GEMINI_TTS_MODEL_NAME=GEMINI_TTS_MODEL_SECRET:latest (append to --update-secrets value)
