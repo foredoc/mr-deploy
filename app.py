@@ -215,6 +215,10 @@ with st.sidebar:
 
     text_prompt = st.text_area("Instructions (e.g., 'Describe this X-ray in simple terms.')", "Describe this chest X-ray and look for any abnormalities.")
 
+   # Checkbox to enable audio generation
+    generate_audio = st.checkbox("Check To Generate Audio Report", value=False)
+
+
 st.header("Generated Report")
 
 if st.button("Generate Report"):
@@ -236,7 +240,7 @@ if st.button("Generate Report"):
                 st.markdown(report)
 
                 # TTS Generation using the restored gemini_client pattern
-                if gemini_client: # Check if client was initialized
+                if generate_audio and gemini_client: # Check if client was initialized
                     st.subheader("Audio Report:")
                     try:
                         # Using gemini_client.models.generate_content as per original script
@@ -279,7 +283,7 @@ if st.button("Generate Report"):
                 elif not gemini_api_key:
                      st.info("Gemini API key not provided. Skipping audio generation.")
                 else: # gemini_api_key was provided, but client initialization failed
-                    st.warning("Gemini API client failed to initialize earlier. Skipping audio generation.")
+                    st.warning("Audio generation skipped.")
 
             except Exception as e:
                 st.error(f"An error occurred during report generation: {e}")
